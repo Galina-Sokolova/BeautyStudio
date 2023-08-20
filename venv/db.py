@@ -4,10 +4,28 @@ cursor = None
 connection = None
 
 
-async def db_start():
+
+
+async def db_start():#создание таблицы
     global cursor, connection
-    connection = sq.connect('resourses/users.db')
-    cursor = connection.cursor()
+    connection = sq.connect('resourses/users.db')#соединение с БД, если БД не было, то connect создаст её
+    cursor = connection.cursor()#создаем курсор, который помогает перемещаться по строчкам и по экрану БД
+    cursor.execute(''' CREATE TABLE "clients" (
+    	"tel_number"	TEXT NOT NULL UNIQUE,
+    	"name"	INTEGER NOT NULL,
+    	"master"	TEXT,
+    	PRIMARY KEY("tel_number"),
+    	FOREIGN KEY("master") REFERENCES "masters"("tel_number")
+    );''')#создаем таблицу клиенты
+    cursor.execute(''' CREATE TABLE "masters" (
+	"tel_number"	TEXT NOT NULL UNIQUE,
+	"name"	TEXT NOT NULL,
+	"status"	INTEGER DEFAULT 1,
+	"rate"	INTEGER DEFAULT 10,
+	"image"	TEXT NOT NULL,
+	PRIMARY KEY("tel_number")
+    );''')#создаст таблицу мастеров
+    connection.commit()
 
 
 async def create_client(client):
